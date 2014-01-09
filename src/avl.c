@@ -1,15 +1,29 @@
+/*
+    AVL tree implementation, source file.
+
+    This implementation was written by Kent "ethereal" Williams-King and is
+    hereby released into the public domain. Do what you wish with it.
+
+    No guarantees as to the correctness of the implementation are provided.
+*/
+
 #include "avl.h"
+
 /* required definitions */
 #ifndef NULL
     #define NULL ((void *)0)
 #endif
 
+/* recursive search helper */
 static void *AVL_NAME(search_helper)(AVL_NAME(tree_t) *tree,
     AVL_NAME(tree_node_t) *node, void *key);
+/* recursive insertion helper */
 static void *AVL_NAME(insert_helper)(AVL_NAME(tree_t) *tree,
     AVL_NAME(tree_node_t) **node, void *key, void *data);
+/* recursive removal helper, finds the appropriate node to remove */
 static void *AVL_NAME(remove_helper)(AVL_NAME(tree_t) *tree,
     AVL_NAME(tree_node_t) **node, void *key);
+/* recursive removal helper, updates tree depths after node swap */
 static void AVL_NAME(remove_depth_helper)(AVL_NAME(tree_node_t) *ptr);
 
 #define AVL_LEFT 0
@@ -17,8 +31,11 @@ static void AVL_NAME(remove_depth_helper)(AVL_NAME(tree_node_t) *ptr);
 /* rotates a node and its left/right child as appropriate (left=0, right=1) */
 static void AVL_NAME(rotate)(AVL_NAME(tree_node_t) **ptr, int which);
 
+/* performs rotations to appropriately rebalance a node and its children */
 static void AVL_NAME(rebalance)(AVL_NAME(tree_node_t) **ptr);
+/* calculates how out-of-balance a node is (>0 if left deeper) */
 static int AVL_NAME(balance_factor)(AVL_NAME(tree_node_t) *ptr);
+/* recalculates the depth of a node */
 static void AVL_NAME(update_depth)(AVL_NAME(tree_node_t) *ptr);
 
 void AVL_NAME(initialize)(AVL_NAME(tree_t) *tree,
@@ -60,6 +77,9 @@ static void *AVL_NAME(insert_helper)(AVL_NAME(tree_t) *tree,
     int cmp;
     void *ret;
 
+    /* if the search leads us to an empty location, then add the new node.
+        rebalancing, if required, will be handled by the parent call in the
+        recursion. */
     if(!*node) {
         AVL_ALLOC(*node);
         (*node)->depth = 1;
@@ -72,6 +92,9 @@ static void *AVL_NAME(insert_helper)(AVL_NAME(tree_t) *tree,
 
     cmp = tree->comparator(key, (*node)->key);
     if(cmp == 0) {
+        /* if we find a node with the same value, then replace the contents.
+            no rebalancing is required, but will be checked by parent recursion
+            call nonetheless. */
         void *old = (*node)->data;
         (*node)->data = data;
         return old;
@@ -83,8 +106,9 @@ static void *AVL_NAME(insert_helper)(AVL_NAME(tree_t) *tree,
         ret = AVL_NAME(insert_helper)(tree, &(*node)->right, key, data);
     }
 
+    /* check, and rebalance the current node, if necessary */
     AVL_NAME(rebalance)(node);
-
+    /* ensure the depth of this node is correct */
     AVL_NAME(update_depth)(*node);
 
     return ret;
@@ -100,13 +124,15 @@ static void *AVL_NAME(remove_helper)(AVL_NAME(tree_t) *tree,
     int cmp;
     void *ret;
 
+    /* if we didn't find the node, then, well . . . */
     if(!*node) return NULL;
 
     cmp = tree->comparator(key, (*node)->key);
 
     if(cmp < 0) ret = AVL_NAME(remove_helper)(tree, &(*node)->left, key);
     else if(cmp > 0) ret = AVL_NAME(remove_helper)(tree, &(*node)->right, key);
-    else /* if(cmp == 0) */{
+    else /* if(cmp == 0) */ {
+        /* node found. */
         AVL_NAME(tree_node_t) **y, *p = NULL;
 
         ret = (*node)->data;
@@ -114,6 +140,7 @@ static void *AVL_NAME(remove_helper)(AVL_NAME(tree_t) *tree,
 
         /* complicated case */
         if((*node)->left && (*node)->right) {
+            /* use maximum node in left subtree as the replacement */
             y = &(*node)->left;
             while((*y)->right) y = &(*y)->right;
 
@@ -121,29 +148,36 @@ static void *AVL_NAME(remove_helper)(AVL_NAME(tree_t) *tree,
             (*node)->key = (*y)->key;
             (*node)->data = (*y)->data;
 
+            /* replace the found node with its left child: if there is no left
+                child, this will replace it with NULL */
             p = (*y)->left;
             AVL_FREE(*y);
             *y = p;
 
-            /* TODO: need to update depths along path */
+            /* ensure all the depths in the left subtree are correct. */
             AVL_NAME(remove_depth_helper)((*node)->left);
         }
         else if((*node)->left) {
+            /* no right subtree, so replace this node with the left subtree */
             p = (*node)->left;
             AVL_FREE(*node);
             *node = p;
         }
         else if((*node)->right) {
+            /* no left subtree, so replace this node with the right subtree */
             p = (*node)->right;
             AVL_FREE(*node);
             *node = p;
         }
         else {
+            /* no children at all, i.e. a leaf */
             AVL_FREE(*node);
             *node = NULL;
         }
     }
 
+    /* if the node was replaced, ensure the depth is correct and that
+        everything is balanced */
     if(*node) {
         AVL_NAME(update_depth)(*node);
         AVL_NAME(rebalance)(node);
@@ -180,6 +214,7 @@ static void AVL_NAME(rebalance)(AVL_NAME(tree_node_t) **node) {
 static void AVL_NAME(rotate)(AVL_NAME(tree_node_t) **node, int dir) {
     AVL_NAME(tree_node_t) *ch;
     
+    /* standard tree rotations */
     if(dir == 0) {
         ch = (*node)->right;
         

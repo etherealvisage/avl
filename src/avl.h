@@ -1,3 +1,10 @@
+/*
+    AVL tree implementation, header file.
+
+    This implementation was written by Kent "ethereal" Williams-King and is
+    hereby released into the public domain. Do what you wish with it.
+*/
+
 #ifndef AVL_H
 #define AVL_H
 
