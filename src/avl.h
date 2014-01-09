@@ -5,7 +5,7 @@
 #define AVL_NAME(name) avl_ ## name
 /* memory allocation macros, change as necessary */
 #define AVL_ALLOC(variable) variable = malloc(sizeof(*variable))
-#define AVL_FREE(variable) free(variable);
+#define AVL_FREE(variable) free(variable)
 #include <stdlib.h> /* for malloc() */
 
 typedef int (*AVL_NAME(comparator_t))(void *key1, void *key2);

@@ -1,5 +1,3 @@
-#include <stdio.h> /* debugging */
-
 #include "avl.h"
 /* required definitions */
 #ifndef NULL
@@ -112,6 +110,7 @@ static void *AVL_NAME(remove_helper)(AVL_NAME(tree_t) *tree,
         AVL_NAME(tree_node_t) **y, *p = NULL;
 
         ret = (*node)->data;
+        if(tree->destructor) tree->destructor((*node)->key);
 
         /* complicated case */
         if((*node)->left && (*node)->right) {
@@ -210,7 +209,9 @@ static int AVL_NAME(balance_factor)(AVL_NAME(tree_node_t) *ptr) {
 static void AVL_NAME(update_depth)(AVL_NAME(tree_node_t) *ptr) {
     ptr->depth = 1;
     if(ptr->left) ptr->depth = ptr->left->depth;
-    if(ptr->right && ptr->depth < ptr->right->depth) ptr->depth = ptr->right->depth;
+    if(ptr->right && ptr->depth < ptr->right->depth) {
+        ptr->depth = ptr->right->depth;
+    }
     ptr->depth ++;
 }
 
