@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include "avl.h"
 
+#define SIZE 20
+
 int cmp(void *k1, void *k2) {
     uint64_t ku1 = (uint64_t)k1;
     uint64_t ku2 = (uint64_t)k2;
@@ -10,34 +12,29 @@ int cmp(void *k1, void *k2) {
     return 1;
 }
 
+
 void kd(void *key) {}
 
 int main() {
-    int i, r;
+    int i, r, j;
 
     avl_tree_t tree;
     avl_initialize(&tree, cmp, kd);
 
-    for(i = 0; i < 1<<10; i ++) {
+    for(i = 0; i < 1<<SIZE; i ++) {
         avl_insert(&tree, (void *)(long)i, (void *)(long)i);
     }
 
     r = 0;
-    for(i = 0; i < 1<<10; i ++) {
-        r ^= (int)(long)avl_search(&tree, (void *)(long)i);
+    for(j = 0; j < 1<<8; j ++) {
+        for(i = 0; i < 1<<SIZE; i ++) {
+            r ^= (int)(long)avl_search(&tree, (void *)(long)i);
+        }
     }
 
-    /*printf("max depth: %i\n", avl_tree_depth(&tree));*/
-
-    printf("Search before: %p\n", avl_search(&tree, (void *)42));
-    avl_remove(&tree, (void *)42);
-    printf("Search after: %p\n", avl_search(&tree, (void *)42));
-
-    printf("depth before: %i\n", avl_tree_depth(&tree));
-    for(i = 0; i < 1<<10; i += 3) {
+    for(i = 0; i < 1<<SIZE; i ++) {
         avl_remove(&tree, (void *)(long)i);
     }
-    printf("depth after: %i\n", avl_tree_depth(&tree));
 
     return 0;
 }

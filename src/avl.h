@@ -3,6 +3,8 @@
 
     This implementation was written by Kent "ethereal" Williams-King and is
     hereby released into the public domain. Do what you wish with it.
+
+    No guarantees as to the correctness of the implementation are provided.
 */
 
 #ifndef AVL_H
@@ -11,7 +13,7 @@
 /* modify this macro to change the prefix */
 #define AVL_NAME(name) avl_ ## name
 /* memory allocation macros, change as necessary */
-#define AVL_ALLOC(variable) variable = malloc(sizeof(*variable))
+#define AVL_ALLOC(variable, type) variable = (type *)malloc(sizeof(type))
 #define AVL_FREE(variable) free(variable)
 #include <stdlib.h> /* for malloc() */
 

@@ -14,9 +14,6 @@
     #define NULL ((void *)0)
 #endif
 
-/* recursive search helper */
-static void *AVL_NAME(search_helper)(AVL_NAME(tree_t) *tree,
-    AVL_NAME(tree_node_t) *node, void *key);
 /* recursive insertion helper */
 static void *AVL_NAME(insert_helper)(AVL_NAME(tree_t) *tree,
     AVL_NAME(tree_node_t) **node, void *key, void *data);
@@ -47,24 +44,19 @@ void AVL_NAME(initialize)(AVL_NAME(tree_t) *tree,
 }
 
 void *AVL_NAME(search)(AVL_NAME(tree_t) *tree, void *key) {
-    return AVL_NAME(search_helper)(tree, tree->root, key);
-}
-
-static void *AVL_NAME(search_helper)(AVL_NAME(tree_t) *tree,
-    AVL_NAME(tree_node_t) *node, void *key) {
-
+    AVL_NAME(tree_node_t) *node = tree->root;
     int cmp;
-
-    if(!node) return NULL;
-
-    cmp = tree->comparator(key, node->key);
-    if(cmp == 0) return node->data;
-    else if(cmp < 0) {
-        return AVL_NAME(search_helper)(tree, node->left, key);
+    while(node) {
+        cmp = tree->comparator(key, node->key);
+        if(cmp == 0) return node->data;
+        else if(cmp < 0) {
+            node = node->left;
+        }
+        else /* if(cmp > 0) */ {
+            node = node->right;
+        }
     }
-    else /* if(cmp > 0) */ {
-        return AVL_NAME(search_helper)(tree, node->right, key);
-    }
+    return NULL;
 }
 
 void *AVL_NAME(insert)(AVL_NAME(tree_t) *tree, void *key, void *data) {
@@ -81,7 +73,7 @@ static void *AVL_NAME(insert_helper)(AVL_NAME(tree_t) *tree,
         rebalancing, if required, will be handled by the parent call in the
         recursion. */
     if(!*node) {
-        AVL_ALLOC(*node);
+        AVL_ALLOC(*node, AVL_NAME(tree_node_t));
         (*node)->depth = 1;
         (*node)->key = key;
         (*node)->data = data;
