@@ -21,7 +21,7 @@ int main() {
     }
 
     for(int i = 0; i < 1<<SIZE; i ++) {
-        m.erase(m.find(i));
+        m.erase(i);
     }
 
     return 0;
