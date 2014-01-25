@@ -19,6 +19,7 @@
 
 typedef int (*AVL_NAME(comparator_t))(void *key1, void *key2);
 typedef void (*AVL_NAME(key_destructor_t))(void *key);
+typedef void (*AVL_NAME(node_visitor_t))(void *key, void *data);
 
 typedef struct AVL_NAME(tree_node_t) {
     struct AVL_NAME(tree_node_t) *left, *right;
@@ -36,6 +37,8 @@ typedef struct {
 
 void AVL_NAME(initialize)(AVL_NAME(tree_t) *tree,
     AVL_NAME(comparator_t) comparator, AVL_NAME(key_destructor_t) destructor);
+void AVL_NAME(destroy)(AVL_NAME(tree_t) *tree,
+    AVL_NAME(node_visitor_t) visitor);
 
 void *AVL_NAME(search)(AVL_NAME(tree_t) *tree, void *key);
 void *AVL_NAME(insert)(AVL_NAME(tree_t) *tree, void *key, void *data);

@@ -14,6 +14,9 @@
     #define NULL ((void *)0)
 #endif
 
+/* recursive destruction helper */
+static void AVL_NAME(destroy_helper)(AVL_NAME(tree_t) *tree,
+    AVL_NAME(tree_node_t) *node, AVL_NAME(node_visitor_t) visitor);
 /* recursive insertion helper */
 static void *AVL_NAME(insert_helper)(AVL_NAME(tree_t) *tree,
     AVL_NAME(tree_node_t) **node, void *key, void *data);
@@ -41,6 +44,24 @@ void AVL_NAME(initialize)(AVL_NAME(tree_t) *tree,
     tree->comparator = comparator;
     tree->destructor = destructor;
     tree->root = NULL;
+}
+
+void AVL_NAME(destroy)(AVL_NAME(tree_t) *tree,
+    AVL_NAME(node_visitor_t) visitor) {
+
+    AVL_NAME(destroy_helper)(tree, tree->root, visitor);
+}
+
+static void AVL_NAME(destroy_helper)(AVL_NAME(tree_t) *tree,
+    AVL_NAME(tree_node_t) *node, AVL_NAME(node_visitor_t) visitor) {
+
+    if(node == NULL) return;
+
+    visitor(node->key, node->data);
+    AVL_NAME(destroy_helper)(tree, node->left, visitor);
+    AVL_NAME(destroy_helper)(tree, node->right, visitor);
+
+    AVL_FREE(node);
 }
 
 void *AVL_NAME(search)(AVL_NAME(tree_t) *tree, void *key) {
