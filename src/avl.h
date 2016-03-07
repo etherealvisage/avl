@@ -46,4 +46,8 @@ void *AVL_NAME(remove)(AVL_NAME(tree_t) *tree, void *key);
 
 int AVL_NAME(tree_depth)(AVL_NAME(tree_t) *tree);
 
+int AVL_NAME(ptrcmp)(void *key1, void *key2);
+int AVL_NAME(intcmp)(void *key1, void *key2);
+int AVL_NAME(ulongcmp)(void *key1, void *key2);
+
 #endif

@@ -267,3 +267,25 @@ int AVL_NAME(tree_depth)(AVL_NAME(tree_t) *tree) {
     if(tree->root) return tree->root->depth;
     return 0;
 }
+
+int AVL_NAME(ptrcmp)(void *key1, void *key2) {
+    if(key1 < key2) return -1;
+    else if(key1 > key2) return 1;
+    else return 0;
+}
+
+int AVL_NAME(intcmp)(void *key1, void *key2) {
+    int val1 = *(int *)key1;
+    int val2 = *(int *)key2;
+    if(val1 < val2) return -1;
+    else if(val1 > val2) return 1;
+    else return 0;
+}
+
+int AVL_NAME(ulongcmp)(void *key1, void *key2) {
+    unsigned long val1 = *(int *)key1;
+    unsigned long val2 = *(int *)key2;
+    if(val1 < val2) return -1;
+    else if(val1 > val2) return 1;
+    else return 0;
+}
