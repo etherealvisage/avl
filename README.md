@@ -21,7 +21,7 @@ It has been used in:
 * Plus various systems research projects
 
 #### Sample use
-
+```c
     /* Map string names to malloc()'d blocks. */
     avl_tree_t tree;
     /* Cast strcmp to avoid warnings; avl_comparator_t takes two void *
@@ -55,3 +55,4 @@ It has been used in:
         relevant pointers reference; we'll just use a built-in function here
         that frees both the keys and the data they point to. */
     avl_destroy(&tree, avl_free_data);
+```
