@@ -50,4 +50,6 @@ int AVL_NAME(ptrcmp)(void *key1, void *key2);
 int AVL_NAME(intcmp)(void *key1, void *key2);
 int AVL_NAME(ulongcmp)(void *key1, void *key2);
 
+void AVL_NAME(free_data)(void *key, void *data);
+
 #endif

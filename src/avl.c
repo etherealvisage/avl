@@ -110,6 +110,8 @@ static void *AVL_NAME(insert_helper)(AVL_NAME(tree_t) *tree,
             call nonetheless. */
         void *old = (*node)->data;
         (*node)->data = data;
+        /* we don't need the new key any more. */
+        tree->destructor(key);
         return old;
     }
     else if(cmp < 0) {
@@ -288,4 +290,9 @@ int AVL_NAME(ulongcmp)(void *key1, void *key2) {
     if(val1 < val2) return -1;
     else if(val1 > val2) return 1;
     else return 0;
+}
+
+void AVL_NAME(free_data)(void *key, void *data) {
+    AVL_FREE(key);
+    AVL_FREE(data);
 }
