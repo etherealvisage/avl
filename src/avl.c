@@ -111,7 +111,7 @@ static void *AVL_NAME(insert_helper)(AVL_NAME(tree_t) *tree,
         void *old = (*node)->data;
         (*node)->data = data;
         /* we don't need the new key any more. */
-        tree->destructor(key);
+        if(tree->destructor) tree->destructor(key);
         return old;
     }
     else if(cmp < 0) {
