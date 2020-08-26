@@ -257,7 +257,7 @@ static int AVL_NAME(balance_factor)(AVL_NAME(tree_node_t) *ptr) {
 }
 
 static void AVL_NAME(update_depth)(AVL_NAME(tree_node_t) *ptr) {
-    ptr->depth = 1;
+    ptr->depth = 0;
     if(ptr->left) ptr->depth = ptr->left->depth;
     if(ptr->right && ptr->depth < ptr->right->depth) {
         ptr->depth = ptr->right->depth;
